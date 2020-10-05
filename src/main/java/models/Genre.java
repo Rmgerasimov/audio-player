@@ -1,13 +1,14 @@
-package models.enums;
+package models;
 
 /**
- * A class who represent the type of the song.
+ * An enum class that represents the genre (music style) of the song.
  */
 public enum Genre {
     RAP("Rap"),
     POP("Pop"),
     METAL("Metal"),
-    TECHNO("Techno");
+    TECHNO("Techno"),
+    OTHER("Other");
 
     private String name;
 
