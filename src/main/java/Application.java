@@ -13,14 +13,34 @@ public class Application {
     public static void main(String[] args) throws IncorrectParametersException, InterruptedException, IOException {
         printCommands();
 
-        Song theBestSong = new Song("The best song", new Performer("Ivan Ivanovski", 18), RAP, 10);
-        Song rado = new Song("Rado - vecheryai", new Performer("Petkan Divaka", 55), TECHNO, 15);
-        Song pardop = new Song("Pardop", new Performer("Just Magda", 42), METAL, 180);
+        AudioPlayer audioPlayer = getAudioPlayer();
+        startApplication(audioPlayer);
+
+        System.out.println("Turning off...");
+    }
+
+    private static void printCommands() {
+        String stringBuilder = "Welcome!\n" +
+                "Our commends are: \n" +
+                "Play, Play last, Play shuffle,\nPause, Stop, Next, Prev,\nAdd song, Remove song," +
+                "\nFind performer by title,\nFind songs by performer,\nGet playlist size," +
+                "\nInfo, Exit\n" +
+                "Enter your commands here: ";
+        System.out.println(stringBuilder);
+    }
+
+    /**
+     * A method that represents the engine of the application.
+     *
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws IncorrectParametersException
+     */
+    private static void startApplication(AudioPlayer audioPlayer)
+            throws InterruptedException, IOException, IncorrectParametersException {
 
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-
-        AudioPlayer audioPlayer = new AudioPlayer(theBestSong, rado, pardop);
         while (!input.equalsIgnoreCase("Exit")) {
             switch (input) {
                 case "Play":
@@ -78,10 +98,20 @@ public class Application {
                     }
                     input = audioPlayer.info();
                     break;
+                case "Find performer by title":
+                    System.out.println("Enter title: ");
+                    String title = scanner.nextLine();
+                    System.out.println(audioPlayer.findPerformerByTitle(title));
+                    input = scanner.nextLine();
+                    break;
                 case "Find songs by performer":
                     System.out.println("Enter performer: ");
                     String performerName = scanner.nextLine();
-                    System.out.println(audioPlayer.findPerformerByTitle(performerName));
+                    System.out.println(audioPlayer.findSongsByPerformer(performerName));
+                    input = scanner.nextLine();
+                    break;
+                case "Get playlist size":
+                    System.out.printf("Song's number: %d\n", audioPlayer.getSongsNumber());
                     input = scanner.nextLine();
                     break;
                 default:
@@ -90,18 +120,25 @@ public class Application {
                     break;
             }
         }
-        System.out.println("Turning off...");
     }
 
+    /**
+     * Creates Song objects.
+     *
+     * @return new AudioPlayer
+     * @throws IncorrectParametersException
+     */
+    private static AudioPlayer getAudioPlayer() throws IncorrectParametersException {
+        Song theBestSong = new Song("The best song", new Performer("Ivan Ivanovski", 18), RAP, 10);
+        Song rado = new Song("Rado - vecheryai", new Performer("Petkan Divaka", 55), TECHNO, 15);
+        Song pardop = new Song("Pardop", new Performer("Just Magda", 42), METAL, 180);
+        return new AudioPlayer(theBestSong, rado, pardop);
+    }
+
+    /**
+     * @return true if current is null
+     */
     private static boolean checkCurrentSong(AudioPlayer audioPlayer) {
         return audioPlayer.getCurrentSong() == null;
-    }
-
-    private static void printCommands() {
-        String stringBuilder = "Welcome!\n" +
-                "Our commends are: \n" +
-                "Play, Play last, Play shuffle,\nPause, Stop, Next, Prev,\nAdd song, Remove song,\nInfo, Exit\n" +
-                "Enter your commands here: ";
-        System.out.println(stringBuilder);
     }
 }
