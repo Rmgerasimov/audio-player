@@ -11,21 +11,13 @@ import java.util.*;
  */
 public class AudioPlayer {
     private static final int ONE_SECOND_IN_MILLISECONDS = 1000;
-    private List<Song> songs;
-    private BufferedReader bufferedReader;
     private Song currentSong;
+    private final List<Song> songs;
+    private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
     public AudioPlayer(Song... songs) {
-        this.songs = new ArrayList<>();
-        bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-
-        Collections.addAll(this.songs, songs);
+        this.songs = new ArrayList<>(Arrays.asList(songs));
     }
-
-    public Song getCurrentSong() {
-        return currentSong;
-    }
-
 
     /**
      * A method that plays songs sorted by title.
@@ -33,11 +25,10 @@ public class AudioPlayer {
      * @return command if the user enters a command,
      * else returns the command "Play" and re-enters this method.
      * @throws InterruptedException
-     * @throws IOException
      */
     public String play() throws InterruptedException, IOException {
         songs.sort(Comparator.comparing(Song::getTitle));
-        return playImpl(0, "Play");
+        return playCommandImpl(0, "Play");
     }
 
     /**
@@ -46,11 +37,14 @@ public class AudioPlayer {
      * @return command if the user enters a command,
      * else returns the command "Play" and enter in play() method.
      * @throws InterruptedException
-     * @throws IOException
      */
     public String playLastListened() throws InterruptedException, IOException {
+        if (currentSong == null) {
+            play();
+        }
+
         int index = songs.indexOf(currentSong);
-        return playImpl(index, "Play");
+        return playCommandImpl(index, "Play");
     }
 
     /**
@@ -58,14 +52,12 @@ public class AudioPlayer {
      *
      * @return command if the user enters a command,
      * else returns the command "Play shuffle" and re-enters this method.
-     * @throws IOException
      * @throws InterruptedException
      */
-    public String playShuffle() throws IOException, InterruptedException {
+    public String playShuffle() throws InterruptedException, IOException {
         Collections.shuffle(songs);
-        return playImpl(0, "Play shuffle");
+        return playCommandImpl(0, "Play shuffle");
     }
-
 
     /**
      * A method that represents the "Play" commands implementation.
@@ -75,19 +67,16 @@ public class AudioPlayer {
      *                    if the user doesn't enter a command.
      * @return next command.
      * @throws InterruptedException
-     * @throws IOException
      */
-    private String playImpl(int index, String nextCommand) throws InterruptedException, IOException {
+    private String playCommandImpl(int index, String nextCommand) throws InterruptedException, IOException {
         for (int i = index; i < songs.size(); i++) {
             currentSong = songs.get(i);
             System.out.println("Now playing: " + currentSong.getDetails());
 
-            int songTiming = currentSong.getLengthInSeconds();
-            for (int j = 0; j < songTiming; j++) {
+            for (int j = 0; j < currentSong.getLengthInSeconds(); j++) {
                 Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
-                String checked = checkInput();
-                if (checked != null) {
-                    return checked;
+                if (bufferedReader.ready()) {
+                    return bufferedReader.readLine();
                 }
             }
         }
@@ -102,7 +91,11 @@ public class AudioPlayer {
      * @throws IOException
      */
     public String pause() throws IOException {
-        System.out.println("Paused..");
+        if (currentSong == null) {
+            System.out.println("There is no current song for pausing! Enter new command: ");
+        } else {
+            System.out.println("Paused..");
+        }
         return getInput();
     }
 
@@ -114,8 +107,12 @@ public class AudioPlayer {
      * @throws IOException
      */
     public String stop() throws IOException {
-        System.out.println("Player stopped");
-        currentSong = null;
+        if (currentSong == null) {
+            System.out.println("There is no current song for stopping! Enter new command: ");
+        } else {
+            System.out.println("Player stopped");
+            currentSong = null;
+        }
         return getInput();
     }
 
@@ -127,15 +124,11 @@ public class AudioPlayer {
      */
     public String next() throws IOException {
         int index = songs.indexOf(currentSong) + 1;
+        currentSong = index >= songs.size() ? songs.get(0) : songs.get(index);
 
-        if (index >= songs.size()) {
-            currentSong = songs.get(0);
-        } else {
-            currentSong = songs.get(index);
-        }
+        System.out.println("Current song: " + currentSong.getDetails());
         return getInput();
     }
-
 
     /**
      * A method that plays the previous song in the playlist.
@@ -145,27 +138,26 @@ public class AudioPlayer {
      */
     public String prev() throws IOException {
         int index = songs.indexOf(currentSong) - 1;
+        currentSong = index < 0 ? songs.get(songs.size() - 1) : songs.get(index);
 
-        if (index < 0) {
-            currentSong = songs.get(songs.size() - 1);
-        } else {
-            currentSong = songs.get(index);
-        }
+        System.out.println("Current song: " + currentSong.getDetails());
         return getInput();
     }
 
     /**
      * A method that adds a song to the playlist.
      *
-     * @param song that will be added.
+     * @param songInput information about new song object
      * @return next command
      * @throws IOException
      */
-    public String addSong(Song song) throws IOException {
+    public String addSong(String[] songInput) throws IOException {
+        Song song = new Song(
+                new Performer(songInput[0], Integer.parseInt(songInput[1])),
+                songInput[2], songInput[3], Integer.parseInt(songInput[4]));
         songs.add(song);
         return getInput();
     }
-
 
     /**
      * @param songNumber number of the song in the playlist that will be removed.
@@ -173,22 +165,9 @@ public class AudioPlayer {
      * @throws IOException
      */
     public String removeSong(int songNumber) throws IOException {
-        if (validateSongNumber(songNumber - 1)) {
-            System.out.println("There is no such song! Enter again:");
-            return getInput();
-        }
-
         songs.remove(songNumber - 1);
         System.out.println("The song is removed!");
         return getInput();
-    }
-
-    /**
-     * @param songNumber number of the song in the playlist.
-     * @return true if song's number is invalid
-     */
-    private boolean validateSongNumber(int songNumber) {
-        return songNumber < 0 || songNumber >= songs.size();
     }
 
     /**
@@ -198,30 +177,13 @@ public class AudioPlayer {
      * @throws IOException
      */
     public String info() throws IOException {
-        int songNumber = songs.indexOf(currentSong) + 1;
-        System.out.printf("%d. %s", songNumber, currentSong.getDetails());
-        return getInput();
-    }
-
-    /**
-     * @return next command or null if nothing is entered by the user
-     * @throws IOException
-     */
-    private String checkInput() throws IOException {
-        return bufferedReader.ready() ? bufferedReader.readLine() : null;
-    }
-
-    /**
-     * @return next command
-     * @throws IOException
-     */
-    private String getInput() throws IOException {
-        while (true) {
-            String checked = checkInput();
-            if (checked != null) {
-                return checked;
-            }
+        if (currentSong == null) {
+            System.out.println("There is no current song");
+        } else {
+            int songNumber = songs.indexOf(currentSong) + 1;
+            System.out.printf("%d. %s", songNumber, currentSong.getDetails());
         }
+        return getInput();
     }
 
     /**
@@ -230,8 +192,9 @@ public class AudioPlayer {
      */
     public String findPerformerByTitle(String title) {
         for (int i = 0; i < songs.size(); i++) {
-            if (songs.get(i).getTitle().equalsIgnoreCase(title)) {
-                return String.format("Song number: %d\nAuthor: %s", i, songs.get(i).getPerformerName());
+            if (songs.get(i).checkSongTitle(title)) {
+                return "Song number: " + (i + 1) +
+                        "\nAuthor: " + songs.get(i).getPerformerName();
             }
         }
         return "There is no found song";
@@ -244,7 +207,7 @@ public class AudioPlayer {
     public String findSongsByPerformer(String name) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Song song : songs) {
-            if (song.getPerformerName().equalsIgnoreCase(name)) {
+            if (song.checkPerformerName(name)) {
                 stringBuilder.append(song.getTitle())
                         .append(System.lineSeparator());
             }
@@ -260,6 +223,18 @@ public class AudioPlayer {
      */
     public int getSongsNumber() {
         return songs.size();
+    }
+
+    /**
+     * @return next command
+     * @throws IOException
+     */
+    private String getInput() throws IOException {
+        while (true) {
+            if (bufferedReader.ready()) {
+                return bufferedReader.readLine();
+            }
+        }
     }
 
     /**

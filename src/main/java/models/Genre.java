@@ -8,6 +8,7 @@ public enum Genre {
     POP("Pop"),
     METAL("Metal"),
     TECHNO("Techno"),
+    CHALGA("Chalga"),
     OTHER("Other");
 
     private String name;

@@ -4,22 +4,24 @@ import exception.IncorrectParametersException;
 
 /**
  * A class that represent musical composition intended to be performed by the performer.
- *
+ * <p>
  * The Song has methods for validation about title and length,
  * also methods for getting the information about the song.
  */
 public class Song {
-    private final String title;
     private final Performer performer;
+    private final String title;
     private final Genre genre;
     private final int lengthInSeconds;
 
-    public Song(String title, Performer performer, Genre genre, int lengthInSeconds) throws IncorrectParametersException {
-        title = validateParameters(title, lengthInSeconds);
+    public Song(Performer performer, String title, String genre, int lengthInSeconds) {
+        validateTitle(title);
+        validateGenre(genre);
+        validateSongLength(lengthInSeconds);
 
-        this.title = title;
         this.performer = performer;
-        this.genre = genre;
+        this.title = title;
+        this.genre = Genre.valueOf(genre.toUpperCase());
         this.lengthInSeconds = lengthInSeconds;
     }
 
@@ -35,38 +37,48 @@ public class Song {
         return lengthInSeconds;
     }
 
+    public boolean checkPerformerName(String name) {
+        return performer.getName().equalsIgnoreCase(name);
+    }
+
+    public boolean checkSongTitle(String title) {
+        return this.title.equalsIgnoreCase(title);
+    }
+
     /**
-     * @param title -> represent song's title
-     * @param lengthInSeconds -> represent song's length
-     * @return song's title after validation
-     * @throws IncorrectParametersException when length is invalid
+     * @param title represent song's title.
+     * @throws IncorrectParametersException when title is not valid.
      */
-    private String validateParameters(String title, int lengthInSeconds) throws IncorrectParametersException {
-        if (validateTitle(title)) {
-            title = "No title";
+    private void validateTitle(String title) {
+        if (title != null && !title.trim().isEmpty()) {
+            return;
         }
-        if (validateSongLength(lengthInSeconds)) {
-            throw new IncorrectParametersException("Incorrect song's length");
+        throw new IncorrectParametersException("Incorrect title!");
+    }
+
+    /**
+     * @param genre represent song's genre.
+     * @throws IncorrectParametersException when genre is not valid.
+     */
+    private void validateGenre(String genre) {
+        for (Genre currentGenre : Genre.values()) {
+            if (currentGenre.getName().equalsIgnoreCase(genre)) {
+                return;
+            }
         }
-        return title;
+        throw new IncorrectParametersException("Incorrect genre");
     }
 
     /**
-     * @param title -> represent song's title
-     * @return true if title is invalid
+     * @param lengthInSeconds represent song's duration.
+     * @throws IncorrectParametersException when duration is not valid.
      */
-    private boolean validateTitle(String title) {
-        return title == null || title.trim().isEmpty();
+    private void validateSongLength(int lengthInSeconds) {
+        if (lengthInSeconds > 0 && lengthInSeconds <= 10_800) {
+            return;
+        }
+        throw new IncorrectParametersException("Incorrect song's length!");
     }
-
-    /**
-     * @param lengthInSeconds -> represent song's length
-     * @return true if length is invalid
-     */
-    private boolean validateSongLength(int lengthInSeconds) {
-        return lengthInSeconds <= 0 || lengthInSeconds > 3000;
-    }
-
 
     /**
      * @return A string that represents the performer name and song title.

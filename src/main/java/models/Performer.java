@@ -1,5 +1,7 @@
 package models;
 
+import exception.IncorrectParametersException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,30 +10,16 @@ import java.util.List;
  * The class Performer contains a List with his songs as well as his name and age.
  */
 public class Performer {
+    private List<Song> songs = new ArrayList<>();
     private final String name;
-    private List<Song> songs;
     private int age;
 
     public Performer(String name, int age) {
-        if (validateName(name)) {
-            name = "Nameless";
-        }
-        if (validateAge(age)) {
-            age = 0;
-        }
+        validateName(name);
+        validateAge(age);
 
         this.name = name;
         this.age = age;
-        this.songs = new ArrayList<>();
-    }
-
-    public Performer(String name) {
-        if (validateName(name)) {
-            name = "Nameless";
-        }
-        this.name = name;
-        this.age = 0;
-        this.songs = new ArrayList<>();
     }
 
     String getName() {
@@ -39,16 +27,24 @@ public class Performer {
     }
 
     /**
-     * @return true if performer name is invalid
+     * @param name represent performer's name.
+     * @throws IncorrectParametersException when name is invalid
      */
-    private boolean validateName(String name) {
-        return name == null || name.trim().isEmpty();
+    private void validateName(String name) {
+        if (name != null && name.trim().isEmpty()) {
+            return;
+        }
+        throw new IncorrectParametersException("Invalid performer name");
     }
 
     /**
-     * @return true if performer age is invalid
+     * @param age represent performer's age.
+     * @throws IncorrectParametersException when age is invalid.
      */
-    private boolean validateAge(int age) {
-        return age < 0 || age > 100;
+    private void validateAge(int age) {
+        if (age > 0 && age <= 100) {
+            return;
+        }
+        throw new IncorrectParametersException("Invalid performer age");
     }
 }
