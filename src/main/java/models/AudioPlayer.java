@@ -22,14 +22,15 @@ public class AudioPlayer {
     }
 
     /**
-     * A method that plays songs sorted by title.
+     * A method that plays songs sorted by title, then by performer name.
      *
      * @return command if the user enters a command,
      * else returns the command "Play" and re-enters this method.
      * @throws InterruptedException
      */
     public String play() throws InterruptedException, IOException {
-        songs.sort(Comparator.comparing(Song::getTitle));
+        songs.sort(Comparator.comparing(Song::getTitle)
+                .thenComparing(Song::getPerformerName));
         return playCommandImpl(0, "Play");
     }
 
