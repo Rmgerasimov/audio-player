@@ -24,12 +24,12 @@ public class Song {
         this.lengthInSeconds = lengthInSeconds;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getPerformerName() {
         return performer.getName();
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public int getLengthInSeconds() {
@@ -37,7 +37,7 @@ public class Song {
     }
 
     /**
-     * @param name performer's name
+     * @param name represent performer's name
      * @return true if name is right
      */
     public boolean checkPerformerName(String name) {
@@ -45,7 +45,7 @@ public class Song {
     }
 
     /**
-     * @param title song's title
+     * @param title represent song's title
      * @return true if title is right
      */
     public boolean checkSongTitle(String title) {
@@ -78,7 +78,7 @@ public class Song {
      * @return A string that represents the performer name and song title.
      */
     public String getDetails() {
-        return String.format("%s - %s", performer.getName(), title);
+        return performer.getName() + " - " + title;
     }
 
     /**
@@ -86,9 +86,9 @@ public class Song {
      */
     @Override
     public String toString() {
-        return String.format("Song's author name: %s", performer.getName()) + System.lineSeparator() +
-                String.format("Song's title: %s", title) + System.lineSeparator() +
-                String.format("Song's genre: %s", genre.getName()) + System.lineSeparator() +
-                String.format("Song's length: %d", lengthInSeconds);
+        return "Song's author name: " + performer.getName() +
+                "\nSong's title: " + title +
+                "\nSong's genre: " + genre.getName() +
+                "\nSong's length: " + lengthInSeconds;
     }
 }

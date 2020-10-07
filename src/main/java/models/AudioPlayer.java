@@ -44,9 +44,7 @@ public class AudioPlayer {
         if (currentSong == null) {
             play();
         }
-
-        int index = songs.indexOf(currentSong);
-        return playCommandImpl(index, "Play");
+        return playCommandImpl(songs.indexOf(currentSong), "Play");
     }
 
     /**
@@ -64,7 +62,7 @@ public class AudioPlayer {
     /**
      * A method that represents the "Play" commands implementation.
      *
-     * @param index       that represents the index of a song in the list.
+     * @param index that represents the index of a song in the list.
      * @param nextCommand that represents the command that will be returned
      *                    if the user doesn't enter a command.
      * @return next command.
@@ -89,71 +87,58 @@ public class AudioPlayer {
      * A method that pause playlist,
      * then waits for other command.
      *
-     * @return next command.
-     * @throws IOException
+     * @return text that will be print on the console.
      */
-    public String pause() throws IOException {
+    public String pause() {
         if (currentSong == null) {
-            System.out.println("There is no current song for pausing! Enter new command: ");
+            return "There is no current song for pausing! Enter new command:";
         } else {
-            System.out.println("Paused..");
+            return "Paused..";
         }
-        return getInput();
     }
 
     /**
      * A method that stop playlist,
      * then waits for other command.
      *
-     * @return next command
-     * @throws IOException
+     * @return text that will be print on the console.
      */
-    public String stop() throws IOException {
+    public String stop() {
         if (currentSong == null) {
-            System.out.println("There is no current song for stopping! Enter new command: ");
+            return "There is no current song for stopping! Enter new command:";
         } else {
-            System.out.println("Player stopped");
             currentSong = null;
+            return "Player stopped!";
         }
-        return getInput();
     }
 
     /**
      * A method that plays the next song in the playlist.
-     *
-     * @return next command
-     * @throws IOException
+     * @return text that will be print on the console.
      */
-    public String next() throws IOException {
-        int index = songs.indexOf(currentSong) + 1;
-        currentSong = index >= songs.size() ? songs.get(0) : songs.get(index);
-
-        System.out.println("Current song: " + currentSong.getDetails());
-        return getInput();
+    public String next() {
+        int nextSongIndex = songs.indexOf(currentSong) + 1;
+        currentSong = nextSongIndex >= songs.size() ? songs.get(0) : songs.get(nextSongIndex);
+        return "Current song: " + currentSong.getDetails();
     }
 
     /**
      * A method that plays the previous song in the playlist.
-     *
-     * @return next command
-     * @throws IOException
+     * @return text that will be print on the console.
      */
-    public String prev() throws IOException {
-        int index = songs.indexOf(currentSong) - 1;
-        currentSong = index < 0 ? songs.get(songs.size() - 1) : songs.get(index);
-
-        System.out.println("Current song: " + currentSong.getDetails());
-        return getInput();
+    public String prev() {
+        int prevSongIndex = songs.indexOf(currentSong) - 1;
+        currentSong = prevSongIndex < 0 ? songs.get(songs.size() - 1) : songs.get(prevSongIndex);
+        return "Current song: " + currentSong.getDetails();
     }
 
     /**
      * A method that adds a song to the playlist.
      *
      * @param songInput information about new song object
-     * @return next command
-     * @throws IOException
+     * @return text that will be print on the console.
      */
-    public String addSong(String[] songInput) throws IOException {
+    public String addSong(String[] songInput) {
         if (songInput.length != 5) {
             throw new IncorrectParametersException("Parameters must be exactly five!");
         }
@@ -162,38 +147,34 @@ public class AudioPlayer {
                 new Performer(songInput[0], Integer.parseInt(songInput[1])),
                 songInput[2], songInput[3], Integer.parseInt(songInput[4]));
         songs.add(song);
-        System.out.println("The song is added!");
-        return getInput();
+        return "The song is added!";
     }
 
     /**
      * @param songNumber number of the song in the playlist that will be removed.
-     * @return next command
-     * @throws IOException
+     * @return text that will be print on the console.
      */
     public String removeSong(int songNumber) throws IOException {
         songs.remove(songNumber - 1);
-        System.out.println("The song is removed!");
-        return getInput();
+        return "The song is removed!";
     }
 
     /**
-     * A method that prints song's number, performer's name and song's title.
-     *
-     * @return next command
-     * @throws IOException
+     * A method that return song's number, performer's name and song's title.
+     * @return text that will be print on the console.
      */
-    public String info() throws IOException {
+    public String info() {
         if (currentSong == null) {
-            System.out.println("There is no current song! Enter new command:");
+            return "There is no current song! Enter new command:";
         } else {
             int songNumber = songs.indexOf(currentSong) + 1;
-            System.out.println(songNumber + ". " + currentSong.getDetails());
+            return songNumber + ". " + currentSong.getDetails();
         }
-        return getInput();
     }
 
     /**
+     * A method that find performer by given song title.
+     *
      * @param title that represent song's title.
      * @return song's number and performer's name if the song is valid.
      */
@@ -208,8 +189,10 @@ public class AudioPlayer {
     }
 
     /**
-     * @param name -> performer's name
-     * @return all songs by the given performer.
+     * A method that find songs by given performer name.
+     *
+     * @param name that represent performer's name
+     * @return all songs by a given performer.
      */
     public String findSongsByPerformer(String name) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -233,19 +216,7 @@ public class AudioPlayer {
     }
 
     /**
-     * @return next command
-     * @throws IOException
-     */
-    private String getInput() throws IOException {
-        while (true) {
-            if (bufferedReader.ready()) {
-                return bufferedReader.readLine();
-            }
-        }
-    }
-
-    /**
-     * @return all information about all songs.
+     * @return all information about songs.
      */
     @Override
     public String toString() {

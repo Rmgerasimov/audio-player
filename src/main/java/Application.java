@@ -52,29 +52,36 @@ public class Application {
                     input = audioPlayer.playShuffle();
                     break;
                 case "Stop":
-                    input = audioPlayer.stop();
+                    System.out.println(audioPlayer.stop());
+                    input = scanner.nextLine();
                     break;
                 case "Pause":
-                    input = audioPlayer.pause();
+                    System.out.println(audioPlayer.pause());
+                    input = scanner.nextLine();
                     break;
                 case "Next":
-                    input = audioPlayer.next();
+                    System.out.println(audioPlayer.next());
+                    input = scanner.nextLine();
                     break;
                 case "Prev":
-                    input = audioPlayer.prev();
+                    System.out.println(audioPlayer.prev());
+                    input = scanner.nextLine();
                     break;
                 case "Add song":
                     System.out.println("Enter the song data in order: performer name, performer age, title, genre, song's length in seconds");
                     String[] songInput = scanner.nextLine().split(", ");
-                    input = audioPlayer.addSong(songInput);
+                    System.out.println(audioPlayer.addSong(songInput));
+                    input = scanner.nextLine();
                     break;
                 case "Remove song":
                     System.out.println("Enter the number of the song: ");
                     int songNumber = Integer.parseInt(scanner.nextLine());
-                    input = audioPlayer.removeSong(songNumber);
+                    System.out.println(audioPlayer.removeSong(songNumber));
+                    input = scanner.nextLine();
                     break;
                 case "Info":
-                    input = audioPlayer.info();
+                    System.out.println(audioPlayer.info());
+                    input = scanner.nextLine();
                     break;
                 case "Find performer by title":
                     System.out.println("Enter title: ");
