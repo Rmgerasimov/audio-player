@@ -12,13 +12,18 @@ import java.util.*;
  * that allow comfortable work with the playlist.
  */
 public class AudioPlayer {
-    private static final int ONE_SECOND_IN_MILLISECONDS = 1000;
     private Song currentSong;
     private final List<Song> songs;
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    private boolean isPlaying = false;
+    private static final int ONE_SECOND_IN_MILLISECONDS = 1000;
 
     public AudioPlayer(Song... songs) {
         this.songs = new ArrayList<>(Arrays.asList(songs));
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
     }
 
     /**
@@ -41,7 +46,7 @@ public class AudioPlayer {
      * else returns the command "Play" and enter in play() method.
      * @throws InterruptedException
      */
-    public String playLastListened() throws InterruptedException, IOException {
+    public String playCurrentSong() throws InterruptedException, IOException {
         if (currentSong == null) {
             play();
         }
@@ -63,13 +68,14 @@ public class AudioPlayer {
     /**
      * A method that represents the "Play" commands implementation.
      *
-     * @param index that represents the index of a song in the list.
+     * @param index       that represents the index of a song in the list.
      * @param nextCommand that represents the command that will be returned
      *                    if the user doesn't enter a command.
      * @return next command.
      * @throws InterruptedException
      */
     private String playCommandImpl(int index, String nextCommand) throws InterruptedException, IOException {
+        isPlaying = true;
         for (int i = index; i < songs.size(); i++) {
             currentSong = songs.get(i);
             System.out.println("Now playing: " + currentSong.getDetails());
@@ -91,6 +97,7 @@ public class AudioPlayer {
      * @return text that will be print on the console.
      */
     public String pause() {
+        isPlaying = false;
         if (currentSong == null) {
             return "There is no current song for pausing! Enter new command:";
         } else {
@@ -105,6 +112,7 @@ public class AudioPlayer {
      * @return text that will be print on the console.
      */
     public String stop() {
+        isPlaying = false;
         if (currentSong == null) {
             return "There is no current song for stopping! Enter new command:";
         } else {
@@ -115,6 +123,7 @@ public class AudioPlayer {
 
     /**
      * A method that plays the next song in the playlist.
+     *
      * @return text that will be print on the console.
      */
     public String next() {
@@ -125,6 +134,7 @@ public class AudioPlayer {
 
     /**
      * A method that plays the previous song in the playlist.
+     *
      * @return text that will be print on the console.
      */
     public String prev() {
@@ -155,13 +165,23 @@ public class AudioPlayer {
      * @param songNumber number of the song in the playlist that will be removed.
      * @return text that will be print on the console.
      */
-    public String removeSong(int songNumber) throws IOException {
-        songs.remove(songNumber - 1);
+    public String removeSong(int songNumber) {
+        if (getSongNumber(currentSong) == songNumber) {
+            currentSong = null;
+        }
+
+        int songIndex = songNumber - 1;
+        if (songIndex < 0 || songIndex >= songs.size()) {
+            return "Song number is invalid";
+        }
+
+        songs.remove(songIndex);
         return "The song is removed!";
     }
 
     /**
      * A method that return song's number, performer's name and song's title.
+     *
      * @return text that will be print on the console.
      */
     public String info() {
@@ -212,8 +232,12 @@ public class AudioPlayer {
     /**
      * @return the number of songs in the playlist.
      */
-    public int getSongsNumber() {
+    public int getPlaylistSize() {
         return songs.size();
+    }
+
+    public int getSongNumber(Song song) {
+        return songs.indexOf(song) + 1;
     }
 
     /**
@@ -223,7 +247,9 @@ public class AudioPlayer {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Song song : songs) {
-            stringBuilder.append(song).append("\n\n");
+            stringBuilder.append("Song number ")
+                    .append(getSongNumber(song)).append("\n")
+                    .append(song).append("\n\n");
         }
         return stringBuilder.toString().trim();
     }

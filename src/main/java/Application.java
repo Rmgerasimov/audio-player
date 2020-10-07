@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class Application {
     public static void main(String[] args) throws IOException, InterruptedException {
+        System.out.println("Welcome!");
         printCommands();
 
         AudioPlayer audioPlayer = initAudioPlayer();
@@ -19,12 +20,11 @@ public class Application {
      * A method that print on the console audio-player commands.
      */
     private static void printCommands() {
-        String stringBuilder = "Welcome!\n" +
-                "Our commends are: \n\n" +
+        String stringBuilder = "Our commends are: \n\n" +
                 "Play, Play last, Play shuffle,\nPause, Stop, Next, Prev,\nAdd song, Remove song,\n" +
                 "Find performer by title,\nFind songs by performer,\nGet playlist size,\n" +
                 "Get all information,\n" +
-                "Info, Exit\n\n" +
+                "Info, Help, Exit\n\n" +
                 "Enter your commands here: ";
         System.out.println(stringBuilder);
     }
@@ -46,7 +46,7 @@ public class Application {
                     input = audioPlayer.play();
                     break;
                 case "Play last":
-                    input = audioPlayer.playLastListened();
+                    input = audioPlayer.playCurrentSong();
                     break;
                 case "Play shuffle":
                     input = audioPlayer.playShuffle();
@@ -60,10 +60,20 @@ public class Application {
                     input = scanner.nextLine();
                     break;
                 case "Next":
+                    if (audioPlayer.isPlaying()) {
+                        audioPlayer.next();
+                        input = audioPlayer.playCurrentSong();
+                        break;
+                    }
                     System.out.println(audioPlayer.next());
                     input = scanner.nextLine();
                     break;
                 case "Prev":
+                    if (audioPlayer.isPlaying()) {
+                        audioPlayer.prev();
+                        input = audioPlayer.playCurrentSong();
+                        break;
+                    }
                     System.out.println(audioPlayer.prev());
                     input = scanner.nextLine();
                     break;
@@ -96,11 +106,15 @@ public class Application {
                     input = scanner.nextLine();
                     break;
                 case "Get playlist size":
-                    System.out.printf("Song's number: %d\n", audioPlayer.getSongsNumber());
+                    System.out.printf("Song's number: %d\n", audioPlayer.getPlaylistSize());
                     input = scanner.nextLine();
                     break;
                 case "Get all information":
                     System.out.println(audioPlayer);
+                    input = scanner.nextLine();
+                    break;
+                case "Help":
+                    printCommands();
                     input = scanner.nextLine();
                     break;
                 default:
@@ -119,7 +133,8 @@ public class Application {
     private static AudioPlayer initAudioPlayer() {
         Song seriousSong = new Song(new Performer("S kvo si doshla", 27), "S Elena Gomez", "Pop", 10);
         Song assLikeThat = new Song(new Performer("Eminem", 48), "Ass like that", "Rap", 25);
+        Song assLikeThatParody = new Song(new Performer("Eminem", 48), "Ass like that - Parody", "Rap", 25);
         Song kravi4kata = new Song(new Performer("KoseBose", 25), "Kravi4kata", "Folklore", 23);
-        return new AudioPlayer(seriousSong, assLikeThat, kravi4kata);
+        return new AudioPlayer(seriousSong, assLikeThat, assLikeThatParody, kravi4kata);
     }
 }
