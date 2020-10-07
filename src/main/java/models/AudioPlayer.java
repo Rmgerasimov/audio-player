@@ -1,5 +1,7 @@
 package models;
 
+import exception.IncorrectParametersException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -152,10 +154,15 @@ public class AudioPlayer {
      * @throws IOException
      */
     public String addSong(String[] songInput) throws IOException {
+        if (songInput.length != 5) {
+            throw new IncorrectParametersException("Parameters must be exactly five!");
+        }
+
         Song song = new Song(
                 new Performer(songInput[0], Integer.parseInt(songInput[1])),
                 songInput[2], songInput[3], Integer.parseInt(songInput[4]));
         songs.add(song);
+        System.out.println("The song is added!");
         return getInput();
     }
 
@@ -178,10 +185,10 @@ public class AudioPlayer {
      */
     public String info() throws IOException {
         if (currentSong == null) {
-            System.out.println("There is no current song");
+            System.out.println("There is no current song! Enter new command:");
         } else {
             int songNumber = songs.indexOf(currentSong) + 1;
-            System.out.printf("%d. %s", songNumber, currentSong.getDetails());
+            System.out.println(songNumber + ". " + currentSong.getDetails());
         }
         return getInput();
     }

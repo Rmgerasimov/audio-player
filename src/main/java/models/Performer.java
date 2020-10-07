@@ -31,7 +31,7 @@ public class Performer {
      * @throws IncorrectParametersException when name is invalid
      */
     private void validateName(String name) {
-        if (name != null && name.trim().isEmpty()) {
+        if (name != null && !name.trim().isEmpty()) {
             return;
         }
         throw new IncorrectParametersException("Invalid performer name");

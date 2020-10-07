@@ -16,7 +16,6 @@ public class Song {
 
     public Song(Performer performer, String title, String genre, int lengthInSeconds) {
         validateTitle(title);
-        validateGenre(genre);
         validateSongLength(lengthInSeconds);
 
         this.performer = performer;
@@ -37,10 +36,18 @@ public class Song {
         return lengthInSeconds;
     }
 
+    /**
+     * @param name performer's name
+     * @return true if name is right
+     */
     public boolean checkPerformerName(String name) {
         return performer.getName().equalsIgnoreCase(name);
     }
 
+    /**
+     * @param title song's title
+     * @return true if title is right
+     */
     public boolean checkSongTitle(String title) {
         return this.title.equalsIgnoreCase(title);
     }
@@ -54,19 +61,6 @@ public class Song {
             return;
         }
         throw new IncorrectParametersException("Incorrect title!");
-    }
-
-    /**
-     * @param genre represent song's genre.
-     * @throws IncorrectParametersException when genre is not valid.
-     */
-    private void validateGenre(String genre) {
-        for (Genre currentGenre : Genre.values()) {
-            if (currentGenre.getName().equalsIgnoreCase(genre)) {
-                return;
-            }
-        }
-        throw new IncorrectParametersException("Incorrect genre");
     }
 
     /**

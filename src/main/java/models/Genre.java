@@ -8,10 +8,10 @@ public enum Genre {
     POP("Pop"),
     METAL("Metal"),
     TECHNO("Techno"),
-    CHALGA("Chalga"),
+    FOLKLORE("Uli4en folklor"),
     OTHER("Other");
 
-    private String name;
+    private final String name;
 
     Genre(String name) {
         this.name = name;

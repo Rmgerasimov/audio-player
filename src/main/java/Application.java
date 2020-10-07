@@ -1,4 +1,3 @@
-import exception.IncorrectParametersException;
 import models.AudioPlayer;
 import models.Performer;
 import models.Song;
@@ -35,10 +34,9 @@ public class Application {
      *
      * @throws InterruptedException
      * @throws IOException
-     * @throws IncorrectParametersException
      */
     private static void startApplication(AudioPlayer audioPlayer)
-            throws InterruptedException, IOException, IncorrectParametersException {
+            throws InterruptedException, IOException {
 
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
@@ -66,14 +64,13 @@ public class Application {
                     input = audioPlayer.prev();
                     break;
                 case "Add song":
-                    System.out.println("Enter the song data in order: title, performer name, performer age, genre, lengthInSeconds");
+                    System.out.println("Enter the song data in order: performer name, performer age, title, genre, song's length in seconds");
                     String[] songInput = scanner.nextLine().split(", ");
                     input = audioPlayer.addSong(songInput);
                     break;
                 case "Remove song":
                     System.out.println("Enter the number of the song: ");
                     int songNumber = Integer.parseInt(scanner.nextLine());
-
                     input = audioPlayer.removeSong(songNumber);
                     break;
                 case "Info":
@@ -111,12 +108,11 @@ public class Application {
      * Initializes AudioPlayer and adds Song objects in it.
      *
      * @return new AudioPlayer.
-     * @throws IncorrectParametersException when parameters isn't valid.
      */
-    private static AudioPlayer initAudioPlayer() throws IncorrectParametersException {
-        Song theBestSong = new Song(new Performer("Ivan Ivanovski", 18),"The best song","Rap", 10);
-        Song rado = new Song(new Performer("Petkan Divaka", 55),"Rado - vecheryai","Techno", 15);
-        Song pardop = new Song(new Performer("Just Magda", 42),"Pardop","Metal", 180);
-        return new AudioPlayer(theBestSong, rado, pardop);
+    private static AudioPlayer initAudioPlayer() {
+        Song seriousSong = new Song(new Performer("S kvo si doshla", 27), "S Elena Gomez", "Pop", 10);
+        Song assLikeThat = new Song(new Performer("Eminem", 48), "Ass like that", "Rap", 25);
+        Song kravi4kata = new Song(new Performer("KoseBose", 25), "Kravi4kata", "Folklore", 23);
+        return new AudioPlayer(seriousSong, assLikeThat, kravi4kata);
     }
 }
